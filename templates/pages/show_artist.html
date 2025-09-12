@@ -21,12 +21,12 @@
 			<i class="fas fa-phone-alt"></i> {% if artist.phone %}{{ artist.phone }}{% else %}No Phone{% endif %}
         </p>
         <p>
-			<i class="fas fa-link"></i> {% if artist.website %}<a href="{{ artist.website }}" target="_blank">{{ artist.website }}</a>{% else %}No Website{% endif %}
+			<i class="fas fa-link"></i> {% if artist.web_link %}<a href="{{ artist.web_link }}" target="_blank">{{ artist.web_link }}</a>{% else %}No web_link{% endif %}
 		</p>
 		<p>
 			<i class="fab fa-facebook-f"></i> {% if artist.facebook_link %}<a href="{{ artist.facebook_link }}" target="_blank">{{ artist.facebook_link }}</a>{% else %}No Facebook Link{% endif %}
         </p>
-		{% if artist.seeking_venue %}
+		{% if artist.is_seeking %}
 		<div class="seeking">
 			<p class="lead">Currently seeking performance venues</p>
 			<div class="description">
@@ -72,7 +72,32 @@
 	</div>
 </section>
 
+<button class="btn btn-primary btn-lg" id="delete_artist">Delete</button>
 <a href="/artists/{{ artist.id }}/edit"><button class="btn btn-primary btn-lg">Edit</button></a>
-
+<script>
+	const deleteBtn = document.getElementById('delete_artist');
+    deleteBtn.onclick =()=>{
+		if (confirm("Are you sure you want to delete this artist?")){
+			fetch(`/artists/{{ artist.id }}`, {
+        		method: 'DELETE'
+      		})
+			.then(res => res.json())
+    		.then(data => {
+      			if (data.success) {
+        			alert(data.message);
+        			window.location.href = "/artists";  // redirect in JS
+      			} else {
+        			alert("Failed: " + data.message);
+      			}
+    		})
+    		.catch(err => {
+      		console.error(err);
+      		alert("Something went wrong.");
+    		});
+		}
+		
+	}
+  
+</script>
 {% endblock %}
 

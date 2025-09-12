@@ -1,5 +1,10 @@
 Fyyur
 -----
+## Starting Program
+
+FLASK_APP=app.py FLASK_DEBUG=true flask run
+sudo -u postgres psql fyyurdb
+sudo service postgresql start
 
 ## Introduction
 
