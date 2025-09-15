@@ -139,7 +139,14 @@ class venue_data:
     self.id = id
     self.name = name
     self.num_upcoming_shows = num_upcoming_shows
-      
+    
+class shows_data:
+  def __init__(self, venue_id,venue_name, venue_image_link,start_time):
+    self.venue_id= venue_id
+    self.venue_name = venue_name
+    self.venue_image_link = venue_image_link
+    self.start_time = start_time
+
 @app.route('/venues')
 def venues():
   # TODO: implement shows and count of shows
@@ -152,7 +159,7 @@ def venues():
   areas = []
 
   for venue in data:
-    num_upcoming_shows = 0
+
     if any(area.city == venue.city and area.state == venue.state for area in areas):
       area = next(area for area in areas if area.city == venue.city and area.state == venue.state)
       area.venues.append({
@@ -220,6 +227,9 @@ def show_venue(venue_id):
   # TODO: replace with real venue data from the venues table, using venue_id
   data =Venue.query.get_or_404(venue_id)
 
+  shows =Show.query.join(Artist).filter(Show.venue_id==venue_id)
+
+
   past_shows = []
   upcoming_shows = []
   past_shows_count = 0
@@ -232,8 +242,10 @@ def show_venue(venue_id):
       show.artist.id,
       show.artist.name,
       show.artist.image_link,
-      show.date.strftime('%Y-%m-%d %H:%M:%S')
+      show.date.strftime('%Y-%m-%d %H:%M:%S'),
+
     )
+
     if show.date < datetime.now():
       past_shows.append(current_show)
       past_shows_count += 1
@@ -259,8 +271,9 @@ def show_venue(venue_id):
       past_shows_count=past_shows_count,
       upcoming_shows_count=upcoming_shows_count
     )
+
   print(f"Venue Data: {venue_data.web_link}")
-  return render_template('pages/show_venue.html', venue=venue_data)
+  return render_template('pages/show_venue.html', venue=venue_data, shows=shows, now=datetime.now() )
 
 #  Create Venue
 #  ----------------------------------------------------------------
@@ -345,12 +358,7 @@ class artists_data:
     self.past_shows_count = past_shows_count
     self.upcoming_shows_count = upcoming_shows_count
     
-class shows_data:
-  def __init__(self, venue_id,venue_name, venue_image_link,start_time):
-    self.venue_id= venue_id
-    self.venue_name = venue_name
-    self.venue_image_link = venue_image_link
-    self.start_time = start_time
+
 
 @app.route('/artists')
 
